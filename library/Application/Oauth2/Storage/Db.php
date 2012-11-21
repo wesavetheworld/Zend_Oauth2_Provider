@@ -1,14 +1,15 @@
 <?php
-require_once 'IOAuth2/OAuth2.php';
+require_once 'Application/Oauth2/Provider.php';
 require_once 'IOAuth2/OAuth2Client.php';
 require_once 'IOAuth2/IOAuth2Storage.php';
 require_once 'IOAuth2/IOAuth2GrantUser.php';
-require_once 'IOAuth2/Storage/Db/AccessTokens.php';
-require_once 'IOAuth2/Storage/Db/AuthCodes.php';
-require_once 'IOAuth2/Storage/Db/Clients.php';
-require_once 'IOAuth2/Storage/Db/RefreshTokens.php';
 
-class IOAuth2_Storage_Db implements IOAuth2GrantUser {
+require_once 'Application/Oauth2/Provider/Storage/Db/AccessTokens.php';
+require_once 'Application/Oauth2/Provider/Storage/Db/AuthCodes.php';
+require_once 'Application/Oauth2/Provider/Storage/Db/Clients.php';
+require_once 'Application/Oauth2/Provider/Storage/Db/RefreshTokens.php';
+
+class Application_Oauth2_Provider_Storage_Db implements IOAuth2GrantUser {
 
 	/**
 	 * User-provided configuration
@@ -18,22 +19,22 @@ class IOAuth2_Storage_Db implements IOAuth2GrantUser {
 	protected $_options = array();
 	
 	/**
-	 * @var IOAuth2_Storage_Db_AccessTokens
+	 * @var Application_Oauth2_Provider_Storage_Db_AccessTokens
 	 */
 	protected $_accessTokenTable = null;
 	
 	/**
-	 * @var IOAuth2_Storage_Db_AuthCodes
+	 * @var Application_Oauth2_Provider_Storage_Db_AuthCodes
 	 */
 	protected $_authCodesTable = null;
 	
 	/**
-	 * @var IOAuth2_Storage_Db_Clients
+	 * @var Application_Oauth2_Provider_Storage_Db_Clients
 	 */
 	protected $_clientsTable = null;
 	
 	/**
-	 * @var IOAuth2_Storage_Db_RefreshTokens
+	 * @var Application_Oauth2_Provider_Storage_Db_RefreshTokens
 	 */
 	protected $_refreshTokenTable = null;
 
@@ -58,19 +59,19 @@ class IOAuth2_Storage_Db implements IOAuth2GrantUser {
 			$db = $this->_initDbAdapter();
 		}
 		
-		$this->_accessTokenTable = new IOAuth2_Storage_Db_AccessTokens(array(
+		$this->_accessTokenTable = new Application_Oauth2_Provider_Storage_Db_AccessTokens(array(
 				'db' => $db,
 		));
 		
-		$this->_authCodesTable = new IOAuth2_Storage_Db_AuthCodes(array(
+		$this->_authCodesTable = new Application_Oauth2_Provider_Storage_Db_AuthCodes(array(
 				'db' => $db,
 		));
 		
-		$this->_clientsTable = new IOAuth2_Storage_Db_Clients(array(
+		$this->_clientsTable = new Application_Oauth2_Provider_Storage_Db_Clients(array(
 				'db' => $db,
 		));
 		
-		$this->_refreshTokenTable = new IOAuth2_Storage_Db_RefreshTokens(array(
+		$this->_refreshTokenTable = new Application_Oauth2_Provider_Storage_Db_RefreshTokens(array(
 				'db' => $db,
 		));
 	}
@@ -276,7 +277,7 @@ class IOAuth2_Storage_Db implements IOAuth2GrantUser {
 	 */
 	public function checkRestrictedGrantType($client_id, $grant_type) {
 		
-		if ($grant_type==OAuth2::GRANT_TYPE_USER_CREDENTIALS) {
+		if ($grant_type==Applicaiton_Oauth2_Provider::GRANT_TYPE_USER_CREDENTIALS) {
 			return true;
 		}
 		
@@ -288,6 +289,7 @@ class IOAuth2_Storage_Db implements IOAuth2GrantUser {
 		$auth    = Zend_Auth::getInstance();
 		
 		// todo - implement login
+		/*
 		$user = $modelUsers->fetchByEmail($email);
 		
 		$adapter = new Auth_Adapter();
@@ -300,6 +302,7 @@ class IOAuth2_Storage_Db implements IOAuth2GrantUser {
         }
         
 		return array('user_id' => $user->getId());
+		*/
 	}
 	
 	/**
