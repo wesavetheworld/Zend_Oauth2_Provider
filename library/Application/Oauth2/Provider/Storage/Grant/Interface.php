@@ -18,7 +18,7 @@ interface Application_Oauth2_Provider_Storage_Grant_Interface extends Applicatio
 	 * You can also use the $client_id param to do any checks required based
 	 * on a client, if you need that.
 	 *
-	 * Required for OAuth2::GRANT_TYPE_USER_CREDENTIALS.
+	 * Required for Application_Oauth2_Provider::GRANT_TYPE_USER_CREDENTIALS.
 	 *
 	 * @param $client_id
 	 * Client identifier to be check with.

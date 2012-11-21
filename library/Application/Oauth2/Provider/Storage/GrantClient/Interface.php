@@ -11,7 +11,7 @@ require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 interface Application_Oauth2_Provider_Storage_GrantClient_Interface extends Application_Oauth2_Provider_Storage_Interface {
 
 	/**
-	 * Required for OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS.
+	 * Required for Application_Oauth2_Provider::GRANT_TYPE_CLIENT_CREDENTIALS.
 	 *
 	 * @param $client_id
 	 * Client identifier to be check with.

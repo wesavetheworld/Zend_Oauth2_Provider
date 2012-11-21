@@ -1,6 +1,5 @@
 <?php
 require_once 'Zend/Db/Table/Abstract.php';
-require_once "IOAuth2/Storage/Db.php";
 
 class Application_Oauth2_Provider_Storage_Db_Clients extends Zend_Db_Table_Abstract
 {

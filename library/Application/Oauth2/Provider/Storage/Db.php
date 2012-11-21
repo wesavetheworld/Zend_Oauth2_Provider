@@ -296,7 +296,7 @@ class Application_Oauth2_Provider_Storage_Db implements Application_Oauth2_Provi
 		$result  = $auth->authenticate($adapter);
 		
 		if (!$result->isValid()) {
-			throw new Application_Oauth2_Provider_Exception(OAuth2::HTTP_BAD_REQUEST, 'authentication_failure', $result->getMessages()[0]);
+			throw new Application_Oauth2_Provider_Exception(Application_Oauth2_Provider::HTTP_BAD_REQUEST, 'authentication_failure', $result->getMessages()[0]);
         }
         
 		return array('user_id' => $user->getId());

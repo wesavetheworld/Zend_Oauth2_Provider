@@ -702,7 +702,7 @@ class Application_Oauth2_Provider {
 			case self::GRANT_TYPE_IMPLICIT:
 				/* TODO: NOT YET IMPLEMENTED */
 				throw new Application_Oauth2_Provider_Exception('501 Not Implemented', 'This OAuth2 library is not yet complete. This functionality is not implemented yet.');
-				if (!($this->storage instanceof IOAuth2GrantImplicit)) {
+				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_GrantImplicit_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				
@@ -1051,7 +1051,7 @@ class Application_Oauth2_Provider {
 	 * An unique access token.
 	 *
 	 * @ingroup oauth2_section_4
-	 * @see OAuth2::genAuthCode()
+	 * @see Application_Oauth2_Provider::genAuthCode()
 	 */
 	protected function genAccessToken() {
 		$tokenLen = 40;
@@ -1073,7 +1073,7 @@ class Application_Oauth2_Provider {
 	 * An unique auth code.
 	 *
 	 * @ingroup oauth2_section_4
-	 * @see OAuth2::genAccessToken()
+	 * @see Application_Oauth2_Provider::genAccessToken()
 	 */
 	protected function genAuthCode() {
 		return $this->genAccessToken(); // let's reuse the same scheme for token generation

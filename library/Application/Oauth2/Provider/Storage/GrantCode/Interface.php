@@ -25,7 +25,7 @@ interface Application_Oauth2_Provider_Storage_GrantCode_Interface extends Applic
 	 *
 	 * Retrieve the stored data for the given authorization code.
 	 *
-	 * Required for OAuth2::GRANT_TYPE_AUTH_CODE.
+	 * Required for Application_Oauth2_Provider::GRANT_TYPE_AUTH_CODE.
 	 *
 	 * @param $code
 	 * Authorization code to be check with.
@@ -52,7 +52,7 @@ interface Application_Oauth2_Provider_Storage_GrantCode_Interface extends Applic
 	 * any sort of success/failure, so you should bail out of the script
 	 * and provide a descriptive fail message.
 	 *
-	 * Required for OAuth2::GRANT_TYPE_AUTH_CODE.
+	 * Required for Application_Oauth2_Provider::GRANT_TYPE_AUTH_CODE.
 	 *
 	 * @param $code
 	 * Authorization code to be stored.
