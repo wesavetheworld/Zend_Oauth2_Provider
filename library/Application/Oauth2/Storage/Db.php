@@ -1,6 +1,5 @@
 <?php
 require_once 'Application/Oauth2/Provider.php';
-require_once 'IOAuth2/OAuth2Client.php';
 require_once 'IOAuth2/IOAuth2GrantUser.php';
 
 
