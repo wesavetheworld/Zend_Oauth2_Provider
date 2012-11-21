@@ -16,7 +16,7 @@ interface Application_Oauth2_Provider_Storage_RefreshTokens_Interface extends Ap
 	 *
 	 * Retrieve the stored data for the given refresh token.
 	 *
-	 * Required for OAuth2::GRANT_TYPE_REFRESH_TOKEN.
+	 * Required for Application_Oauth2_Provider::GRANT_TYPE_REFRESH_TOKEN.
 	 *
 	 * @param $refresh_token
 	 * Refresh token to be check with.
@@ -43,7 +43,7 @@ interface Application_Oauth2_Provider_Storage_RefreshTokens_Interface extends Ap
 	 * any sort of success/failure, so you should bail out of the script
 	 * and provide a descriptive fail message.
 	 *
-	 * Required for OAuth2::GRANT_TYPE_REFRESH_TOKEN.
+	 * Required for Application_Oauth2_Provider::GRANT_TYPE_REFRESH_TOKEN.
 	 *
 	 * @param $refresh_token
 	 * Refresh token to be stored.
