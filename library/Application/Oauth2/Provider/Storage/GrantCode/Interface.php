@@ -1,4 +1,5 @@
 <?php
+require_once 'Application/Oauth2/Provider.php';
 require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 
 /**
@@ -8,7 +9,7 @@ require_once 'Application/Oauth2/Provider/Storage/Interface.php';
  * @author Dave Rochwerger <catch.dave@gmail.com>
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1
  */
-interface IOAuth2GrantCode extends Application_Oauth2_Provider_Storage_Interface {
+interface Application_Oauth2_Provider_Storage_GrantCode_Interface extends Application_Oauth2_Provider_Storage_Interface {
 	
 	/**
 	 * The Authorization Code grant type supports a response type of "code". 
@@ -17,7 +18,7 @@ interface IOAuth2GrantCode extends Application_Oauth2_Provider_Storage_Interface
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-1.4.1
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2
 	 */
-	const RESPONSE_TYPE_CODE = OAuth2::RESPONSE_TYPE_AUTH_CODE;
+	const RESPONSE_TYPE_CODE = Application_Oauth2_Provider::RESPONSE_TYPE_AUTH_CODE;
 
 	/**
 	 * Fetch authorization code data (probably the most common grant type).

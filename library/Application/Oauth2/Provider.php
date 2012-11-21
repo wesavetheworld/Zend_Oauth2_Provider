@@ -619,7 +619,7 @@ class Application_Oauth2_Provider {
 		// Do the granting
 		switch ($input["grant_type"]) {
 			case self::GRANT_TYPE_AUTH_CODE:
-				if (!($this->storage instanceof IOAuth2GrantCode)) {
+				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_GrantCode_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				
