@@ -710,7 +710,7 @@ class Application_Oauth2_Provider {
 			
 			// Extended grant types:
 			case filter_var($input["grant_type"], FILTER_VALIDATE_URL):
-				if (!($this->storage instanceof IOAuth2GrantExtension)) {
+				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_GrantExtension_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				$uri = filter_var($input["grant_type"], FILTER_VALIDATE_URL);

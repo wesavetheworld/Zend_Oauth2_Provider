@@ -8,7 +8,7 @@ require_once 'Application/Oauth2/Provider/Storage/Interface.php';
  * @author Dave Rochwerger <catch.dave@gmail.com>
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.5
  */
-interface IOAuth2GrantExtension extends Application_Oauth2_Provider_Storage_Interface {
+interface Application_Oauth2_Provider_Storage_GrantExtension_Interface extends Application_Oauth2_Provider_Storage_Interface {
 
 	/**
 	 * Check any extended grant types.
