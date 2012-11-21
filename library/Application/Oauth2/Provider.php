@@ -39,7 +39,7 @@ require_once 'Application/Oauth2/Provider/Storage/Interface.php';
  * @author Debug, coding style clean up and documented by Edison Wong <hswong3i@pantarei-design.com>.
  * @author Refactored (including separating from raw POST/GET) and updated to draft v20 by David Rochwerger <catch.dave@gmail.com>.
  */
-class Applicaiton_Oauth2_Provider {
+class Application_Oauth2_Provider {
 	
 	/**
 	 * Array of persistent variables stored.
@@ -665,7 +665,7 @@ class Applicaiton_Oauth2_Provider {
 				break;
 			
 			case self::GRANT_TYPE_CLIENT_CREDENTIALS:
-				if (!($this->storage instanceof IOAuth2GrantClient)) {
+				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_GrantClient_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				

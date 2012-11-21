@@ -1,5 +1,6 @@
 <?php
 
+require_once 'Application/Oauth2/Provider.php';
 require_once 'Application/Oauth2/Provider/Exception.php';
 
 /**
@@ -32,7 +33,7 @@ class Application_Oauth2_Provider_Redirect_Exception extends Application_Oauth2_
 	 * @ingroup oauth2_error
 	 */
 	public function __construct($redirect_uri, $error, $error_description = NULL, $state = NULL) {
-		parent::__construct(OAuth2::HTTP_FOUND, $error, $error_description);
+		parent::__construct(Application_Oauth2_Provider::HTTP_FOUND, $error, $error_description);
 		
 		$this->redirectUri = $redirect_uri;
 		if ($state) {
