@@ -275,7 +275,7 @@ class Application_Oauth2_Provider_Storage_Db implements Application_Oauth2_Provi
 	 */
 	public function checkRestrictedGrantType($client_id, $grant_type) {
 		
-		if ($grant_type==Applicaiton_Oauth2_Provider::GRANT_TYPE_USER_CREDENTIALS) {
+		if ($grant_type==Application_Oauth2_Provider::GRANT_TYPE_USER_CREDENTIALS) {
 			return true;
 		}
 		
