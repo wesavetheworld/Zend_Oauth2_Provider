@@ -649,7 +649,7 @@ class Application_Oauth2_Provider {
 				break;
 			
 			case self::GRANT_TYPE_USER_CREDENTIALS:
-				if (!($this->storage instanceof IOAuth2GrantUser)) {
+				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_Grant_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				

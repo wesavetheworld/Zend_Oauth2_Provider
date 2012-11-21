@@ -1,7 +1,5 @@
 <?php
 require_once 'Application/Oauth2/Provider.php';
-require_once 'IOAuth2/IOAuth2GrantUser.php';
-
 
 require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 require_once 'Application/Oauth2/Provider/Storage/Db/AccessTokens.php';
@@ -9,7 +7,7 @@ require_once 'Application/Oauth2/Provider/Storage/Db/AuthCodes.php';
 require_once 'Application/Oauth2/Provider/Storage/Db/Clients.php';
 require_once 'Application/Oauth2/Provider/Storage/Db/RefreshTokens.php';
 
-class Application_Oauth2_Provider_Storage_Db implements IOAuth2GrantUser {
+class Application_Oauth2_Provider_Storage_Db implements Application_Oauth2_Provider_Storage_Grant_Interface {
 
 	/**
 	 * User-provided configuration
