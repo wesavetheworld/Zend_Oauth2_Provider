@@ -1,4 +1,5 @@
 <?php
+require_once 'Application/Oauth2/Provider/Exception.php';
 
 /**
  * Send an error header with the given realm and an error, if provided.
