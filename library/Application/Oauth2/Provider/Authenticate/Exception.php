@@ -8,7 +8,7 @@
  *
  * @ingroup oauth2_error
  */
-class OAuth2AuthenticateException extends Application_Oauth2_Provider_Exception {
+class Application_Oauth2_Provider_Authenticate_Exception extends Application_Oauth2_Provider_Exception {
 	
 	protected $header;
 
