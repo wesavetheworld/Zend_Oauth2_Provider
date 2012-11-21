@@ -1,7 +1,4 @@
 <?php
-require_once 'OAuth2ServerException.php';
-require_once 'OAuth2RedirectException.php';
-
 require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 
 /**
@@ -430,29 +427,29 @@ class Applicaiton_Oauth2_Provider {
 		$realm = $this->getVariable(self::CONFIG_WWW_REALM);
 		
 		if (!$token_param) { // Access token was not provided
-			throw new Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'The request is missing a required parameter, includes an unsupported parameter or parameter value, repeats the same parameter, uses more than one method for including an access token, or is otherwise malformed.', $scope);
+			throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'The request is missing a required parameter, includes an unsupported parameter or parameter value, repeats the same parameter, uses more than one method for including an access token, or is otherwise malformed.', $scope);
 		}
 		
 		// Get the stored token data (from the implementing subclass)
 		$token = $this->storage->getAccessToken($token_param);
 		if ($token === NULL) {
-			throw new Exception(self::HTTP_UNAUTHORIZED, $tokenType, $realm, self::ERROR_INVALID_GRANT, 'The access token provided is invalid.', $scope);
+			throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_UNAUTHORIZED, $tokenType, $realm, self::ERROR_INVALID_GRANT, 'The access token provided is invalid.', $scope);
 		}
 		
 		// Check we have a well formed token
 		if (!isset($token["expires"]) || !isset($token["client_id"])) {
-			throw new Exception(self::HTTP_UNAUTHORIZED, $tokenType, $realm, self::ERROR_INVALID_GRANT, 'Malformed token (missing "expires" or "client_id")', $scope);
+			throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_UNAUTHORIZED, $tokenType, $realm, self::ERROR_INVALID_GRANT, 'Malformed token (missing "expires" or "client_id")', $scope);
 		}
 		
 		// Check token expiration (expires is a mandatory paramter)
 		if (isset($token["expires"]) && time() > $token["expires"]) {
-			throw new Exception(self::HTTP_UNAUTHORIZED, $tokenType, $realm, self::ERROR_INVALID_GRANT, 'The access token provided has expired.', $scope);
+			throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_UNAUTHORIZED, $tokenType, $realm, self::ERROR_INVALID_GRANT, 'The access token provided has expired.', $scope);
 		}
 		
 		// Check scope, if provided
 		// If token doesn't have a scope, it's NULL/empty, or it's insufficient, then throw an error
 		if ($scope && (!isset($token["scope"]) || !$token["scope"] || !$this->checkScope($scope, $token["scope"]))) {
-			throw new Exception(self::HTTP_FORBIDDEN, $tokenType, $realm, self::ERROR_INSUFFICIENT_SCOPE, 'The request requires higher privileges than provided by the access token.', $scope);
+			throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_FORBIDDEN, $tokenType, $realm, self::ERROR_INSUFFICIENT_SCOPE, 'The request requires higher privileges than provided by the access token.', $scope);
 		}
 		
 		return $token;
@@ -502,15 +499,15 @@ class Applicaiton_Oauth2_Provider {
 		// Check that exactly one method was used
 		$methodsUsed = !empty($headers) + isset($_GET[self::TOKEN_PARAM_NAME]) + isset($_POST[self::TOKEN_PARAM_NAME]);
 		if ($methodsUsed > 1) {
-			throw new Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'Only one method may be used to authenticate at a time (Auth header, GET or POST).');
+			throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'Only one method may be used to authenticate at a time (Auth header, GET or POST).');
 		} elseif ($methodsUsed == 0) {
-			throw new Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'The access token was not found.');
+			throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'The access token was not found.');
 		}
 		
 		// HEADER: Get the access token from the header
 		if (!empty($headers)) {
 			if (!preg_match('/' . self::TOKEN_BEARER_HEADER_NAME . '\s(\S+)/', $headers, $matches)) {
-				throw new Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'Malformed auth header');
+				throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'Malformed auth header');
 			}
 			
 			return $matches[1];
@@ -519,12 +516,12 @@ class Applicaiton_Oauth2_Provider {
 		// POST: Get the token from POST data
 		if (isset($_POST[self::TOKEN_PARAM_NAME])) {
 			if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-				throw new Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'When putting the token in the body, the method must be POST.');
+				throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'When putting the token in the body, the method must be POST.');
 			}
 			
 			// IETF specifies content-type. NB: Not all webservers populate this _SERVER variable
 			if (isset($_SERVER['CONTENT_TYPE']) && $_SERVER['CONTENT_TYPE'] != 'application/x-www-form-urlencoded') {
-				throw new Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'The content type for POST requests must be "application/x-www-form-urlencoded"');
+				throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'The content type for POST requests must be "application/x-www-form-urlencoded"');
 			}
 			
 			return $_POST[self::TOKEN_PARAM_NAME];
@@ -843,21 +840,21 @@ class Applicaiton_Oauth2_Provider {
 
 		// type and client_id are required
 		if (!$input["response_type"]) {
-			throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_INVALID_REQUEST, 'Invalid or missing response type.', $input["state"]);
+			throw new Application_Oauth2_Provider_Redirect_Exception($input["redirect_uri"], self::ERROR_INVALID_REQUEST, 'Invalid or missing response type.', $input["state"]);
 		}
 
 		if ($input['response_type'] != self::RESPONSE_TYPE_AUTH_CODE && $input['response_type'] != self::RESPONSE_TYPE_ACCESS_TOKEN) {
-			throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, NULL, $input["state"]);
+			throw new Application_Oauth2_Provider_Redirect_Exception($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, NULL, $input["state"]);
 		}
 
 		// Validate that the requested scope is supported
 		if ($input["scope"] && !$this->checkScope($input["scope"], $this->getVariable(self::CONFIG_SUPPORTED_SCOPES))) {
-			throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.', $input["state"]);
+			throw new Application_Oauth2_Provider_Redirect_Exception($input["redirect_uri"], self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.', $input["state"]);
 		}
 		
 		// Validate state parameter exists (if configured to enforce this)
 		if ($this->getVariable(self::CONFIG_ENFORCE_STATE) && !$input["state"]) {
-			throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_INVALID_REQUEST, "The state parameter is required.");
+			throw new Application_Oauth2_Provider_Redirect_Exception($input["redirect_uri"], self::ERROR_INVALID_REQUEST, "The state parameter is required.");
 		}
 		
 		// Return retrieved client details together with input
@@ -912,7 +909,7 @@ class Applicaiton_Oauth2_Provider {
 		}
 		
 		if ($is_authorized === FALSE) {
-			throw new OAuth2RedirectException($redirect_uri, self::ERROR_USER_DENIED, "The user denied access to your application", $state);
+			throw new Application_Oauth2_Provider_Redirect_Exception($redirect_uri, self::ERROR_USER_DENIED, "The user denied access to your application", $state);
 		} else {
 			if ($response_type == self::RESPONSE_TYPE_AUTH_CODE) {
 				$result["query"]["code"] = $this->createAuthCode($client_id, $user_id, $redirect_uri, $scope);

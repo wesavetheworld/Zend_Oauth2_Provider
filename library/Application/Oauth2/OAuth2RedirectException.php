@@ -7,7 +7,7 @@
  *
  * @ingroup oauth2_error
  */
-class OAuth2RedirectException extends Application_Oauth2_Provider_Exception {
+class Application_Oauth2_Provider_Redirect_Exception extends Application_Oauth2_Provider_Exception {
 	
 	protected $redirectUri;
 
