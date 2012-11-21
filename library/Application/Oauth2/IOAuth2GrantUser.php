@@ -1,4 +1,5 @@
 <?php
+require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 
 /**
  * Storage engines that support the "Resource Owner Password Credentials"
@@ -7,7 +8,7 @@
  * @author Dave Rochwerger <catch.dave@gmail.com>
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.3
  */
-interface IOAuth2GrantUser extends IOAuth2Storage {
+interface IOAuth2GrantUser extends Application_Oauth2_Provider_Storage_Interface {
 
 	/**
 	 * Grant access tokens for basic user credentials.

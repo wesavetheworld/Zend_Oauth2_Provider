@@ -3,6 +3,8 @@ require_once 'OAuth2ServerException.php';
 require_once 'OAuth2AuthenticateException.php';
 require_once 'OAuth2RedirectException.php';
 
+require_once 'Application/Oauth2/Provider/Storage/Interface.php';
+
 /**
  * @mainpage
  * OAuth 2.0 server in PHP, originally written for
@@ -51,7 +53,7 @@ class Applicaiton_Oauth2_Provider {
 	/**
 	 * Storage engine for authentication server
 	 * 
-	 * @var IOAuth2Storage
+	 * @var Application_Oauth2_Provider_Storage_Interface
 	 */
 	protected $storage;
 	
@@ -337,7 +339,7 @@ class Applicaiton_Oauth2_Provider {
 	 *
 	 * @param $config - An associative array as below of config options. See CONFIG_* constants.
 	 */
-	public function __construct(IOAuth2Storage $storage, $config = array()) {
+	public function __construct(Application_Oauth2_Provider_Storage_Interface $storage, $config = array()) {
 		$this->storage = $storage;
 		
 		// Configuration options

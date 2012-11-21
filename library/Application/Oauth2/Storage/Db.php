@@ -1,9 +1,10 @@
 <?php
 require_once 'Application/Oauth2/Provider.php';
 require_once 'IOAuth2/OAuth2Client.php';
-require_once 'IOAuth2/IOAuth2Storage.php';
 require_once 'IOAuth2/IOAuth2GrantUser.php';
 
+
+require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 require_once 'Application/Oauth2/Provider/Storage/Db/AccessTokens.php';
 require_once 'Application/Oauth2/Provider/Storage/Db/AuthCodes.php';
 require_once 'Application/Oauth2/Provider/Storage/Db/Clients.php';
@@ -136,7 +137,7 @@ class Application_Oauth2_Provider_Storage_Db implements IOAuth2GrantUser {
 	}
 	
 	/**
-	 * Implements IOAuth2Storage::checkClientCredentials().
+	 * Implements Application_Oauth2_Provider_Storage_Interface::checkClientCredentials().
 	 */
 	public function checkClientCredentials($client_id, $client_secret = NULL) {
 		
@@ -158,7 +159,7 @@ class Application_Oauth2_Provider_Storage_Db implements IOAuth2GrantUser {
 	}
 	
 	/**
-	 * Implements IOAuth2Storage::getRedirectUri().
+	 * Implements Application_Oauth2_Provider_Storage_Interface::getRedirectUri().
 	 */
 	public function getClientDetails($client_id) {
 		try {
@@ -180,35 +181,35 @@ class Application_Oauth2_Provider_Storage_Db implements IOAuth2GrantUser {
 	}
 	
 	/**
-	 * Implements IOAuth2Storage::getAccessToken().
+	 * Implements Application_Oauth2_Provider_Storage_Interface::getAccessToken().
 	 */
 	public function getAccessToken($oauth_token) {
 		return $this->getToken($oauth_token, FALSE);
 	}
 	
 	/**
-	 * Implements IOAuth2Storage::setAccessToken().
+	 * Implements Application_Oauth2_Provider_Storage_Interface::setAccessToken().
 	 */
 	public function setAccessToken($oauth_token, $client_id, $user_id, $expires, $scope = NULL) {
 		$this->setToken($oauth_token, $client_id, $user_id, $expires, $scope, FALSE);
 	}
 	
 	/**
-	 * @see IOAuth2Storage::getRefreshToken()
+	 * @see Application_Oauth2_Provider_Storage_Interface::getRefreshToken()
 	 */
 	public function getRefreshToken($refresh_token) {
 		return $this->getToken($refresh_token, TRUE);
 	}
 	
 	/**
-	 * @see IOAuth2Storage::setRefreshToken()
+	 * @see Application_Oauth2_Provider_Storage_Interface::setRefreshToken()
 	 */
 	public function setRefreshToken($refresh_token, $client_id, $user_id, $expires, $scope = NULL) {
 		return $this->setToken($refresh_token, $client_id, $user_id, $expires, $scope, TRUE);
 	}
 	
 	/**
-	 * @see IOAuth2Storage::unsetRefreshToken()
+	 * @see Application_Oauth2_Provider_Storage_Interface::unsetRefreshToken()
 	 */
 	public function unsetRefreshToken($refresh_token) {
 		try {
@@ -230,7 +231,7 @@ class Application_Oauth2_Provider_Storage_Db implements IOAuth2GrantUser {
 	}
 	
 	/**
-	 * Implements IOAuth2Storage::getAuthCode().
+	 * Implements Application_Oauth2_Provider_Storage_Interface::getAuthCode().
 	 */
 	public function getAuthCode($code) {
 		try {
@@ -251,7 +252,7 @@ class Application_Oauth2_Provider_Storage_Db implements IOAuth2GrantUser {
 	}
 	
 	/**
-	 * Implements IOAuth2Storage::setAuthCode().
+	 * Implements Application_Oauth2_Provider_Storage_Interface::setAuthCode().
 	 */
 	public function setAuthCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = NULL) {
 		try {
@@ -273,7 +274,7 @@ class Application_Oauth2_Provider_Storage_Db implements IOAuth2GrantUser {
 	}
 	
 	/**
-	 * @see IOAuth2Storage::checkRestrictedGrantType()
+	 * @see Application_Oauth2_Provider_Storage_Interface::checkRestrictedGrantType()
 	 */
 	public function checkRestrictedGrantType($client_id, $grant_type) {
 		

@@ -1,4 +1,5 @@
 <?php
+require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 
 /**
  * Storage engines that support the "Implicit"
@@ -7,7 +8,7 @@
  * @author Dave Rochwerger <catch.dave@gmail.com>
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2
  */
-interface IOAuth2GrantImplicit extends IOAuth2Storage {
+interface IOAuth2GrantImplicit extends Application_Oauth2_Provider_Storage_Interface {
 	
 	/**
 	 * The Implicit grant type supports a response type of "token". 

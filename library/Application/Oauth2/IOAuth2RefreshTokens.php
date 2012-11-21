@@ -1,4 +1,5 @@
 <?php
+require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 
 /**
  * Storage engines that want to support refresh tokens should
@@ -8,7 +9,7 @@
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-6
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-1.5
  */
-interface IOAuth2RefreshTokens extends IOAuth2Storage {
+interface IOAuth2RefreshTokens extends Application_Oauth2_Provider_Storage_Interface {
 
 	/**
 	 * Grant refresh access tokens.

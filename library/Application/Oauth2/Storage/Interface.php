@@ -5,7 +5,7 @@
  * 
  * @author David Rochwerger <catch.dave@gmail.com>
  */
-interface IOAuth2Storage {
+interface Application_Oauth2_Provider_Storage_Interface {
 
 	/**
 	 * Make sure that the client credentials is valid.
