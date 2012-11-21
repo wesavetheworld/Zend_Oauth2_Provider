@@ -1,4 +1,5 @@
 <?php
+require_once 'Application/Oauth2/Provider.php';
 require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 
 /**
@@ -8,7 +9,7 @@ require_once 'Application/Oauth2/Provider/Storage/Interface.php';
  * @author Dave Rochwerger <catch.dave@gmail.com>
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2
  */
-interface IOAuth2GrantImplicit extends Application_Oauth2_Provider_Storage_Interface {
+interface Application_Oauth2_Provider_Storage_GrantImplicit_Interface extends Application_Oauth2_Provider_Storage_Interface {
 	
 	/**
 	 * The Implicit grant type supports a response type of "token". 
@@ -17,5 +18,5 @@ interface IOAuth2GrantImplicit extends Application_Oauth2_Provider_Storage_Inter
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-1.4.2
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2
 	 */
-	const RESPONSE_TYPE_TOKEN = OAuth2::RESPONSE_TYPE_ACCESS_TOKEN;
+	const RESPONSE_TYPE_TOKEN = Application_Oauth2_Provider::RESPONSE_TYPE_ACCESS_TOKEN;
 }
