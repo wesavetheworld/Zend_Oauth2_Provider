@@ -9,3 +9,5 @@ extras/documentation
 /.project
 /.settings/
 /.DS_Store
+/vendor/
+/composer.lock

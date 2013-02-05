@@ -1,5 +1,5 @@
 {
     "require": {
-		"zendframework/zendframework1": "1.12.1"
+		"bombayworks/zendframework1": "v1.12.1"
     }
 }
