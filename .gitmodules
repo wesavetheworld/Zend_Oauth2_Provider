@@ -1,0 +1,12 @@
+[submodule "recipes/cookbooks/apache2"]
+	path = recipes/cookbooks/apache2
+	url = https://github.com/opscode-cookbooks/apache2.git
+[submodule "recipes/cookbooks/mysql"]
+	path = recipes/cookbooks/mysql
+	url = https://github.com/opscode-cookbooks/mysql
+[submodule "recipes/cookbooks/yum"]
+	path = recipes/cookbooks/yum
+	url = https://github.com/cookbooks/yum
+[submodule "recipes/cookbooks/build-essential"]
+	path = recipes/cookbooks/build-essential
+	url = https://github.com/opscode-cookbooks/build-essential.git
