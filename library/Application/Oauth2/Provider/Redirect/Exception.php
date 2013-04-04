@@ -1,8 +1,5 @@
 <?php
 
-require_once 'Application/Oauth2/Provider.php';
-require_once 'Application/Oauth2/Provider/Exception.php';
-
 /**
  * Redirect the end-user's user agent with error message.
  *

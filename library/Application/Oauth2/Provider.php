@@ -1,6 +1,4 @@
 <?php
-require_once 'Application/Oauth2/Provider/Storage/Interface.php';
-
 /**
  * @mainpage
  * OAuth 2.0 server in PHP, originally written for

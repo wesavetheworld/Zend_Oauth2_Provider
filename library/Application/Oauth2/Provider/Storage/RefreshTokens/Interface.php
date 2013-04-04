@@ -1,5 +1,4 @@
 <?php
-require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 
 /**
  * Storage engines that want to support refresh tokens should

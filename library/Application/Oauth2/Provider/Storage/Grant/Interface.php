@@ -1,5 +1,4 @@
 <?php
-require_once 'Application/Oauth2/Provider/Storage/Interface.php';
 
 /**
  * Storage engines that support the "Resource Owner Password Credentials"

@@ -1,11 +1,4 @@
 <?php
-require_once 'Application/Oauth2/Provider.php';
-
-require_once 'Application/Oauth2/Provider/Storage/Interface.php';
-require_once 'Application/Oauth2/Provider/Storage/Db/AccessTokens.php';
-require_once 'Application/Oauth2/Provider/Storage/Db/AuthCodes.php';
-require_once 'Application/Oauth2/Provider/Storage/Db/Clients.php';
-require_once 'Application/Oauth2/Provider/Storage/Db/RefreshTokens.php';
 
 class Application_Oauth2_Provider_Storage_Db implements Application_Oauth2_Provider_Storage_Grant_Interface {
 
@@ -89,27 +82,7 @@ class Application_Oauth2_Provider_Storage_Db implements Application_Oauth2_Provi
 			require_once 'Zend/Exception.php';
 			throw new Zend_Exception("Configuration array must have a key for 'type' for the database type to use");
 		}
-	
-		if (!array_key_exists('host', $options)) {
-			require_once 'Zend/Exception.php';
-			throw new Zend_Exception("Configuration array must have a key for 'host' for the host to use");
-		}
-	
-		if (!array_key_exists('username', $options)) {
-			require_once 'Zend/Exception.php';
-			throw new Zend_Exception("Configuration array must have a key for 'username' for the username to use");
-		}
-	
-		if (!array_key_exists('password', $options)) {
-			require_once 'Zend/Exception.php';
-			throw new Zend_Exception("Configuration array must have a key for 'password' for the password to use");
-		}
-	
-		if (!array_key_exists('dbname', $options)) {
-			require_once 'Zend/Exception.php';
-			throw new Zend_Exception("Configuration array must have a key for 'dbname' for the database to use");
-		}
-	
+
 		$type = $options['type'];
 		unset($options['type']);
 	

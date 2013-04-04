@@ -11,3 +11,5 @@ extras/documentation
 /.DS_Store
 /vendor/
 /composer.lock
+/.vagrant
+/composer.phar
