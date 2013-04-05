@@ -78,6 +78,7 @@ class Application_Oauth2_Provider_Storage_Db implements Application_Oauth2_Provi
 	protected function _initDbAdapter()
 	{
 		$options = &$this->_options['driverOptions'];
+		
 		if (!array_key_exists('type', $options)) {
 			require_once 'Zend/Exception.php';
 			throw new Zend_Exception("Configuration array must have a key for 'type' for the database type to use");
@@ -95,8 +96,6 @@ class Application_Oauth2_Provider_Storage_Db implements Application_Oauth2_Provi
 	
 		return $db;
 	}
-	
-	
 	
 	/**
 	 * Handle PDO exceptional cases.
@@ -124,7 +123,7 @@ class Application_Oauth2_Provider_Storage_Db implements Application_Oauth2_Provi
 			
 			return $this->checkPassword($client_secret, $client['client_secret'], $client_id);
 		} catch (Zend_Exception $e) {
-			$this->handleException($e);
+			throw new Application_Oauth2_Provider_Exception($http_status_code, $error)
 		}
 	}
 	

@@ -30,8 +30,6 @@
 /**
  * OAuth2.0 draft v20 server-side implementation.
  * 
- * @todo Add support for Message Authentication Code (MAC) token type.
- *
  * @author Originally written by Tim Ridgely <tim.ridgely@gmail.com>.
  * @author Updated to draft v10 by Aaron Parecki <aaron@parecki.com>.
  * @author Debug, coding style clean up and documented by Edison Wong <hswong3i@pantarei-design.com>.
@@ -39,17 +37,19 @@
  */
 class Application_Oauth2_Provider {
 	
-	/**
-	 * Array of persistent variables stored.
-	 */
-	protected $conf = array();
+    /**
+     * User-provided configuration
+     *
+     * @var array
+     */
+    protected $_options = array();
 	
 	/**
 	 * Storage engine for authentication server
 	 * 
 	 * @var Application_Oauth2_Provider_Storage_Interface
 	 */
-	protected $storage;
+	protected $_storage;
 	
 	/**
 	 * Keep track of the old refresh token. So we can unset
@@ -97,8 +97,6 @@ class Application_Oauth2_Provider {
 	const CLIENT_ID_REGEXP = '/^[a-z0-9-_]{3,32}$/i';
 	
 	/**
-	 * @defgroup oauth2_section_5 Accessing a Protected Resource
-	 * @{
 	 *
 	 * Clients access protected resources by presenting an access token to
 	 * the resource server. Access tokens act as bearer tokens, where the
@@ -131,12 +129,6 @@ class Application_Oauth2_Provider {
 	const TOKEN_BEARER_HEADER_NAME = 'Bearer';
 	
 	/**
-	 * @}
-	 */
-	
-	/**
-	 * @defgroup oauth2_section_4 Obtaining Authorization
-	 * @{
 	 *
 	 * When the client interacts with an end-user, the end-user MUST first
 	 * grant the client authorization to access its protected resources.
@@ -161,12 +153,6 @@ class Application_Oauth2_Provider {
 	const RESPONSE_TYPE_ACCESS_TOKEN = 'token';
 	
 	/**
-	 * @}
-	 */
-	
-	/**
-	 * @defgroup oauth2_section_5 Obtaining an Access Token
-	 * @{
 	 *
 	 * The client obtains an access token by authenticating with the
 	 * authorization server and presenting its authorization grant (in the form of
@@ -194,25 +180,13 @@ class Application_Oauth2_Provider {
 	const GRANT_TYPE_REGEXP = '#^(authorization_code|token|password|client_credentials|refresh_token|http://.*)$#';
 	
 	/**
-	 * @}
-	 */
-	
-	/**
 	 * Possible token types as defined by draft 20.
-	 * 
-	 * TODO: Add support for mac (and maybe other types?)
 	 * 
 	 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7.1 
 	 */
 	const TOKEN_TYPE_BEARER = 'bearer';
-	const TOKEN_TYPE_MAC = 'mac'; // Currently unsupported
 	
 
-	/**
-	 * @defgroup self::HTTP_status HTTP status code
-	 * @{
-	 */
-	
 	/**
 	 * HTTP status codes for successful and error states as specified by draft 20.
 	 *
@@ -224,18 +198,6 @@ class Application_Oauth2_Provider {
 	const HTTP_UNAUTHORIZED = '401 Unauthorized';
 	const HTTP_FORBIDDEN = '403 Forbidden';
 	const HTTP_UNAVAILABLE = '503 Service Unavailable';
-	
-	/**
-	 * @}
-	 */
-	
-	/**
-	 * @defgroup oauth2_error Error handling
-	 * @{
-	 *
-	 * @todo Extend for i18n.
-	 * @todo Consider moving all error related functionality into a separate class.
-	 */
 	
 	/**
 	 * The request is missing a required parameter, includes an unsupported
@@ -325,20 +287,16 @@ class Application_Oauth2_Provider {
 	const ERROR_INSUFFICIENT_SCOPE = 'invalid_scope';
 
 	/**
-	 * @}
-	 */
-	
-	/**
 	 * Creates an OAuth2.0 server-side instance.
 	 *
 	 * @param $config - An associative array as below of config options. See CONFIG_* constants.
 	 */
 	public function __construct(Application_Oauth2_Provider_Storage_Interface $storage, $config = array()) {
-		$this->storage = $storage;
+		$this->_storage = $storage;
 		
 		// Configuration options
 		$this->setDefaultOptions();
-		foreach ( $config as $name => $value ) {
+		foreach ($config as $name => $value) {
 			$this->setVariable($name, $value);
 		}
 	}
@@ -347,7 +305,7 @@ class Application_Oauth2_Provider {
 	 * Default configuration options are specified here.
 	 */
 	protected function setDefaultOptions() {
-		$this->conf = array(
+		$this->_options = array(
 			self::CONFIG_ACCESS_LIFETIME => self::DEFAULT_ACCESS_TOKEN_LIFETIME,
 			self::CONFIG_REFRESH_LIFETIME => self::DEFAULT_REFRESH_TOKEN_LIFETIME,
 			self::CONFIG_AUTH_LIFETIME => self::DEFAULT_AUTH_CODE_LIFETIME,
@@ -358,41 +316,66 @@ class Application_Oauth2_Provider {
 			self::CONFIG_SUPPORTED_SCOPES => array() // This is expected to be passed in on construction. Scopes can be an aribitrary string.
 		);  
 	}
-
-	/**
-	 * Returns a persistent variable.
-	 *
-	 * @param $name
-	 * The name of the variable to return.
-	 * @param $default
-	 * The default value to use if this variable has never been set.
-	 *
-	 * @return
-	 * The value of the variable.
-	 */
-	public function getVariable($name, $default = NULL) {
-		$name = strtolower($name);
-		
-		return isset($this->conf[$name]) ? $this->conf[$name] : $default;
-	}
-
-	/**
-	 * Sets a persistent variable.
-	 *
-	 * @param $name
-	 * The name of the variable to set.
-	 * @param $value
-	 * The value to set.
-	 */
-	public function setVariable($name, $value) {
-		$name = strtolower($name);
-		
-		$this->conf[$name] = $value;
-		return $this;
-	}
-
-	// Resource protecting (Section 5).
 	
+	/**
+	 * Set queue options
+	 *
+	 * @param  array $options
+	 * @return Application_Oauth2_Provider
+	 */
+	public function setOptions(array $options)
+	{
+	    $this->_options = array_merge($this->_options, $options);
+	    return $this;
+	}
+	
+	/**
+	 * Set an individual configuration option
+	 *
+	 * @param  string $name
+	 * @param  mixed $value
+	 * @return Application_Oauth2_Provider
+	 */
+	public function setOption($name, $value)
+	{
+	    $this->_options[(string) strtolower($name)] = $value;
+	    return $this;
+	}
+
+    /**
+     * Returns the configuration options for the queue
+     *
+     * @return array
+     */
+    public function getOptions()
+    {
+        return $this->_options;
+    }
+
+    /**
+     * Determine if a requested option has been defined
+     *
+     * @param  string $name
+     * @return bool
+     */
+    public function hasOption($name)
+    {
+        return array_key_exists($name, $this->_options);
+    }
+
+    /**
+     * Retrieve a single option
+     *
+     * @param  string $name
+     * @return null|mixed Returns null if option does not exist; option value otherwise
+     */
+    public function getOption($name)
+    {
+        if ($this->hasOption($name)) {
+            return $this->_options[$name];
+        }
+        return null;
+    }
 
 	/**
 	 * Check that a valid access token has been provided.
@@ -421,15 +404,16 @@ class Application_Oauth2_Provider {
 	 * @ingroup oauth2_section_7
 	 */
 	public function verifyAccessToken($token_param, $scope = NULL) {
-		$tokenType = $this->getVariable(self::CONFIG_TOKEN_TYPE);
-		$realm = $this->getVariable(self::CONFIG_WWW_REALM);
+		$tokenType = $this->getOption(self::CONFIG_TOKEN_TYPE);
+		$realm = $this->getOption(self::CONFIG_WWW_REALM);
 		
-		if (!$token_param) { // Access token was not provided
+		// Access token was not provided
+		if (!$token_param) {
 			throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'The request is missing a required parameter, includes an unsupported parameter or parameter value, repeats the same parameter, uses more than one method for including an access token, or is otherwise malformed.', $scope);
 		}
 		
 		// Get the stored token data (from the implementing subclass)
-		$token = $this->storage->getAccessToken($token_param);
+		$token = $this->_storage->getAccessToken($token_param);
 		if ($token === NULL) {
 			throw new Application_Oauth2_Provider_Authenticate_Exception(self::HTTP_UNAUTHORIZED, $tokenType, $realm, self::ERROR_INVALID_GRANT, 'The access token provided is invalid.', $scope);
 		}
@@ -491,8 +475,8 @@ class Application_Oauth2_Provider {
 			}
 		}
 		
-		$tokenType = $this->getVariable(self::CONFIG_TOKEN_TYPE);
-		$realm = $this->getVariable(self::CONFIG_WWW_REALM);
+		$tokenType = $this->getOption(self::CONFIG_TOKEN_TYPE);
+		$realm = $this->getOption(self::CONFIG_WWW_REALM);
 		
 		// Check that exactly one method was used
 		$methodsUsed = !empty($headers) + isset($_GET[self::TOKEN_PARAM_NAME]) + isset($_POST[self::TOKEN_PARAM_NAME]);
@@ -558,9 +542,6 @@ class Application_Oauth2_Provider {
 		return (count(array_diff($required_scope, $available_scope)) == 0);
 	}
 
-	// Access token granting (Section 4).
-	
-
 	/**
 	 * Grant or deny a requested access token.
 	 * This would be called from the "/token" endpoint as defined in the spec.
@@ -606,18 +587,18 @@ class Application_Oauth2_Provider {
 		// Authorize the client
 		$client = $this->getClientCredentials($inputData, $authHeaders);
 		
-		if ($this->storage->checkClientCredentials($client[0], $client[1]) === FALSE) {
+		if ($this->_storage->checkClientCredentials($client[0], $client[1]) === FALSE) {
 			throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
 		}
 		
-		if (!$this->storage->checkRestrictedGrantType($client[0], $input["grant_type"])) {
+		if (!$this->_storage->checkRestrictedGrantType($client[0], $input["grant_type"])) {
 			throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNAUTHORIZED_CLIENT, 'The grant type is unauthorized for this client_id');
 		}
 		
 		// Do the granting
 		switch ($input["grant_type"]) {
 			case self::GRANT_TYPE_AUTH_CODE:
-				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_GrantCode_Interface)) {
+				if (!($this->_storage instanceof Application_Oauth2_Provider_Storage_GrantCode_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				
@@ -625,11 +606,11 @@ class Application_Oauth2_Provider {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'Missing parameter. "code" is required');
 				}
 				
-				if ($this->getVariable(self::CONFIG_ENFORCE_INPUT_REDIRECT) && !$input["redirect_uri"]) {
+				if ($this->getOption(self::CONFIG_ENFORCE_INPUT_REDIRECT) && !$input["redirect_uri"]) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, "The redirect URI parameter is required.");
 				}
 				
-				$stored = $this->storage->getAuthCode($input["code"]);
+				$stored = $this->_storage->getAuthCode($input["code"]);
 				
 				// Check the code exists
 				if ($stored === NULL || $client[0] != $stored["client_id"]) {
@@ -647,7 +628,7 @@ class Application_Oauth2_Provider {
 				break;
 			
 			case self::GRANT_TYPE_USER_CREDENTIALS:
-				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_Grant_Interface)) {
+				if (!($this->_storage instanceof Application_Oauth2_Provider_Storage_Grant_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				
@@ -655,7 +636,7 @@ class Application_Oauth2_Provider {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'Missing parameters. "username" and "password" required');
 				}
 				
-				$stored = $this->storage->checkUserCredentials($client[0], $input["username"], $input["password"]);
+				$stored = $this->_storage->checkUserCredentials($client[0], $input["username"], $input["password"]);
 				
 				if ($stored === FALSE) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT);
@@ -663,7 +644,7 @@ class Application_Oauth2_Provider {
 				break;
 			
 			case self::GRANT_TYPE_CLIENT_CREDENTIALS:
-				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_GrantClient_Interface)) {
+				if (!($this->_storage instanceof Application_Oauth2_Provider_Storage_GrantClient_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				
@@ -671,11 +652,11 @@ class Application_Oauth2_Provider {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client_secret is mandatory for the "client_credentials" grant type');
 				}
 				// NB: We don't need to check for $stored==false, because it was checked above already
-				$stored = $this->storage->checkClientCredentialsGrant($client[0], $client[1]);
+				$stored = $this->_storage->checkClientCredentialsGrant($client[0], $client[1]);
 				break;
 			
 			case self::GRANT_TYPE_REFRESH_TOKEN:
-				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_RefreshTokens_Interface)) {
+				if (!($this->_storage instanceof Application_Oauth2_Provider_Storage_RefreshTokens_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				
@@ -683,7 +664,7 @@ class Application_Oauth2_Provider {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'No "refresh_token" parameter found');
 				}
 				
-				$stored = $this->storage->getRefreshToken($input["refresh_token"]);
+				$stored = $this->_storage->getRefreshToken($input["refresh_token"]);
 				
 				if ($stored === NULL || $client[0] != $stored["client_id"]) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT, 'Invalid refresh token');
@@ -700,7 +681,7 @@ class Application_Oauth2_Provider {
 			case self::GRANT_TYPE_IMPLICIT:
 				/* TODO: NOT YET IMPLEMENTED */
 				throw new Application_Oauth2_Provider_Exception('501 Not Implemented', 'This OAuth2 library is not yet complete. This functionality is not implemented yet.');
-				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_GrantImplicit_Interface)) {
+				if (!($this->_storage instanceof Application_Oauth2_Provider_Storage_GrantImplicit_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				
@@ -708,11 +689,11 @@ class Application_Oauth2_Provider {
 			
 			// Extended grant types:
 			case filter_var($input["grant_type"], FILTER_VALIDATE_URL):
-				if (!($this->storage instanceof Application_Oauth2_Provider_Storage_GrantExtension_Interface)) {
+				if (!($this->_storage instanceof Application_Oauth2_Provider_Storage_GrantExtension_Interface)) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
 				}
 				$uri = filter_var($input["grant_type"], FILTER_VALIDATE_URL);
-				$stored = $this->storage->checkGrantExtension($uri, $inputData, $authHeaders);
+				$stored = $this->_storage->checkGrantExtension($uri, $inputData, $authHeaders);
 				
 				if ($stored === FALSE) {
 					throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT);
@@ -813,7 +794,7 @@ class Application_Oauth2_Provider {
 		}
 		
 		// Get client details
-		$stored = $this->storage->getClientDetails($input["client_id"]);
+		$stored = $this->_storage->getClientDetails($input["client_id"]);
 		if ($stored === FALSE) {
 			throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, "Client id does not exist");
 		}
@@ -825,7 +806,7 @@ class Application_Oauth2_Provider {
 		if (!$input["redirect_uri"] && !$stored["redirect_uri"]) {
 			throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_REDIRECT_URI_MISMATCH, 'No redirect URL was supplied or stored.');
 		}
-		if ($this->getVariable(self::CONFIG_ENFORCE_INPUT_REDIRECT) && !$input["redirect_uri"]) {
+		if ($this->getOption(self::CONFIG_ENFORCE_INPUT_REDIRECT) && !$input["redirect_uri"]) {
 			throw new Application_Oauth2_Provider_Exception(self::HTTP_BAD_REQUEST, self::ERROR_REDIRECT_URI_MISMATCH, 'The redirect URI is mandatory and was not supplied.');
 		}
 		// Only need to validate if redirect_uri provided on input and stored.
@@ -846,12 +827,12 @@ class Application_Oauth2_Provider {
 		}
 
 		// Validate that the requested scope is supported
-		if ($input["scope"] && !$this->checkScope($input["scope"], $this->getVariable(self::CONFIG_SUPPORTED_SCOPES))) {
+		if ($input["scope"] && !$this->checkScope($input["scope"], $this->getOption(self::CONFIG_SUPPORTED_SCOPES))) {
 			throw new Application_Oauth2_Provider_Redirect_Exception($input["redirect_uri"], self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.', $input["state"]);
 		}
 		
 		// Validate state parameter exists (if configured to enforce this)
-		if ($this->getVariable(self::CONFIG_ENFORCE_STATE) && !$input["state"]) {
+		if ($this->getOption(self::CONFIG_ENFORCE_STATE) && !$input["state"]) {
 			throw new Application_Oauth2_Provider_Redirect_Exception($input["redirect_uri"], self::ERROR_INVALID_REQUEST, "The state parameter is required.");
 		}
 		
@@ -999,17 +980,17 @@ class Application_Oauth2_Provider {
 			"access_token" => $user_id . '.' . $this->genAccessToken(),
 		);
 		
-		$this->storage->setAccessToken($token["access_token"], $client_id, $user_id, time() + $this->getVariable(self::CONFIG_ACCESS_LIFETIME), $scope);
+		$this->_storage->setAccessToken($token["access_token"], $client_id, $user_id, time() + $this->getOption(self::CONFIG_ACCESS_LIFETIME), $scope);
 		
 		// Issue a refresh token also, if we support them
-		if ($this->storage instanceof Application_Oauth2_Provider_Storage_RefreshTokens_Interface) {
+		if ($this->_storage instanceof Application_Oauth2_Provider_Storage_RefreshTokens_Interface) {
 			$token["refresh_token"] = $user_id . '.' . $this->genAccessToken();
 			
-			$this->storage->setRefreshToken($token["refresh_token"], $client_id, $user_id, time() + $this->getVariable(self::CONFIG_REFRESH_LIFETIME), $scope);
+			$this->_storage->setRefreshToken($token["refresh_token"], $client_id, $user_id, time() + $this->getOption(self::CONFIG_REFRESH_LIFETIME), $scope);
 			
 			// If we've granted a new refresh token, expire the old one
 			if ($this->oldRefreshToken) {
-				$this->storage->unsetRefreshToken($this->oldRefreshToken);
+				$this->_storage->unsetRefreshToken($this->oldRefreshToken);
 				unset($this->oldRefreshToken);
 			}
 		}
@@ -1035,7 +1016,7 @@ class Application_Oauth2_Provider {
 	 */
 	private function createAuthCode($client_id, $user_id, $redirect_uri, $scope = NULL) {
 		$code = $this->genAuthCode();
-		$this->storage->setAuthCode($code, $client_id, $user_id, $redirect_uri, time() + $this->getVariable(self::CONFIG_AUTH_LIFETIME), $scope);
+		$this->_storage->setAuthCode($code, $client_id, $user_id, $redirect_uri, time() + $this->getOption(self::CONFIG_AUTH_LIFETIME), $scope);
 		return $code;
 	}
 
@@ -1084,8 +1065,6 @@ class Application_Oauth2_Provider {
 	 *
 	 * Implementing classes may need to override this function if need be.
 	 * 
-	 * @todo We may need to re-implement pulling out apache headers to support extended grant types
-	 *
 	 * @return
 	 * An array of the basic username and password provided.
 	 *
