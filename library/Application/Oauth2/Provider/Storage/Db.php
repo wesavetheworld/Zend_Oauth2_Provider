@@ -123,7 +123,7 @@ class Application_Oauth2_Provider_Storage_Db implements Application_Oauth2_Provi
 			
 			return $this->checkPassword($client_secret, $client['client_secret'], $client_id);
 		} catch (Zend_Exception $e) {
-			throw new Application_Oauth2_Provider_Exception($http_status_code, $error)
+			$this->handleException($e);
 		}
 	}
 	

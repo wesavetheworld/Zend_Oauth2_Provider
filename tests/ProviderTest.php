@@ -36,7 +36,7 @@ class Application_Oauth2_ProviderTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(3600, $this->_provider->getOption(Application_Oauth2_Provider::CONFIG_ACCESS_LIFETIME));
         $this->assertEquals(1209600, $this->_provider->getOption(Application_Oauth2_Provider::CONFIG_REFRESH_LIFETIME));
         $this->assertEquals(30, $this->_provider->getOption(Application_Oauth2_Provider::CONFIG_AUTH_LIFETIME));
-        $this->assertEquals([], $this->_provider->getOption(Application_Oauth2_Provider::CONFIG_SUPPORTED_SCOPES));
+        $this->assertEquals(array(), $this->_provider->getOption(Application_Oauth2_Provider::CONFIG_SUPPORTED_SCOPES));
         $this->assertEquals('bearer', $this->_provider->getOption(Application_Oauth2_Provider::CONFIG_TOKEN_TYPE));
         $this->assertEquals('Service', $this->_provider->getOption(Application_Oauth2_Provider::CONFIG_WWW_REALM));
         $this->assertEquals(false, $this->_provider->getOption(Application_Oauth2_Provider::CONFIG_ENFORCE_INPUT_REDIRECT));
